@@ -14,6 +14,7 @@ class Run extends Command
 
     public function handle(): int
     {
+        $this->line('');
         $this->comment('Welcome to DevCompanion!');
         $this->line('----------------------------------------');
 
