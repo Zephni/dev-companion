@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace WebRegulate\DevCompanion\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class Run extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'dev-companion';
 
     public $description = 'My command';
 
