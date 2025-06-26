@@ -4,7 +4,9 @@ namespace WebRegulate\DevCompanion\Commands;
 
 use Illuminate\Console\Command;
 
+use Symfony\Component\Console\Input\InputDefinition;
 use function Laravel\Prompts\select;
+use WebRegulate\DevCompanion\Classes\InlineCommand;
 
 class RunCommand extends Command
 {
@@ -29,12 +31,16 @@ class RunCommand extends Command
         while (true) {
             // Get available commands
             $availableCommands = [];
-            foreach ($commandsConfig as $key => $commandClass) {
-                if (class_exists($commandClass)) {
-                    $commandInstance = new $commandClass;
+            foreach ($commandsConfig as $key => $command) {
+                if($command instanceof InlineCommand) {
+                    $command->setDefinition(new InputDefinition([]));
+                    $availableCommands[$key] = $command->getDescription();
+                }
+                elseif (class_exists($command)) {
+                    $commandInstance = new $command;
                     $availableCommands[$key] = $commandInstance->getDescription();
                 } else {
-                    $this->error("Command class {$commandClass} does not exist.");
+                    $this->error("Command class {$command} does not exist.");
                 }
             }
 

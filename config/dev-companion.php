@@ -1,9 +1,15 @@
 <?php
 
+use WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand;
+use WebRegulate\DevCompanion\Classes\InlineCommand;
+
 // config for WebRegulate/DevCompanion
 return [
     'available-commands' => [
-        'ssh' => WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand::class,
+        'ssh' => SshCommand::class,
+        'versions' => InlineCommand::make('Check local versions [php, composer, npm, node]', function (InlineCommand $command) {
+            $command->runLocalCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
+        })
     ],
     'ssh_connections' => [
         'devserver' => [
