@@ -9,7 +9,7 @@ use function Laravel\Prompts\select;
 
 class SshCommand extends Command
 {
-    public $signature = 'ssh';
+    public $signature = 'dev-companion:ssh';
 
     public $description = 'Access ssh shell';
 

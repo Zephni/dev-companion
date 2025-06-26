@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 use function Laravel\Prompts\select;
 
-class Run extends Command
+class RunCommand extends Command
 {
     public $signature = 'dev-companion';
 
