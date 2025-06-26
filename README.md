@@ -23,6 +23,12 @@ You can install the package via composer:
 composer require webregulate/dev-companion --dev
 ```
 
+Install assets (this is needed for the `php artisan dev-companion` command to work):
+
+```bash
+php artisan dev-companion:install
+```
+
 You can publish the config file with:
 
 ```bash
