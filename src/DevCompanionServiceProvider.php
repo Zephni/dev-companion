@@ -3,8 +3,9 @@
 namespace WebRegulate\DevCompanion;
 
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use WebRegulate\DevCompanion\Commands\RunCommand;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand;
 
 class DevCompanionServiceProvider extends PackageServiceProvider
@@ -24,6 +25,11 @@ class DevCompanionServiceProvider extends PackageServiceProvider
             ->hasCommands(
                 RunCommand::class,
                 SshCommand::class,
-            );
+            )
+            ->hasInstallCommand(function(InstallCommand $command) {
+                $command
+                    ->publishConfigFile();
+            });
+
     }
 }

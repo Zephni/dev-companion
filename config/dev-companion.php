@@ -6,11 +6,17 @@ return [
         'ssh' => WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand::class,
     ],
     'ssh_connections' => [
-        'production' => [
-            'host' => '54.170.27.188',
+        'devserver' => [
+            'host' => 'XX.XX.XX.XX',
             'port' => 22,
             'user' => 'forge',
-            'on_connect' => 'cd /home/forge/yourmoo.deliverysoftware.co.uk',
+            'on_connect' => 'cd /home/forge/your-dev-domain.com',
         ],
+        // 'production' => [
+        //     'host' => 'XX.XX.XX.XX',
+        //     'port' => 22,
+        //     'user' => 'forge',
+        //     'on_connect' => 'cd /home/forge/your-production-domain.com',
+        // ],
     ],
 ];
