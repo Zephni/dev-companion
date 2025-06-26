@@ -20,14 +20,7 @@ We highly appreciate you sending us a postcard from your hometown, mentioning wh
 You can install the package via composer:
 
 ```bash
-composer require webregulate/dev-companion
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="dev-companion-migrations"
-php artisan migrate
+composer require webregulate/dev-companion --dev
 ```
 
 You can publish the config file with:
@@ -43,17 +36,10 @@ return [
 ];
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="dev-companion-views"
-```
-
 ## Usage
 
-```php
-$devCompanion = new WebRegulate\DevCompanion();
-echo $devCompanion->echoPhrase('Hello, WebRegulate!');
+```bash
+php artisan dev-companion
 ```
 
 ## Testing
