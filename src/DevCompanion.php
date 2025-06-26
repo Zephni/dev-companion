@@ -2,14 +2,15 @@
 
 namespace WebRegulate\DevCompanion;
 
-class DevCompanion {
+class DevCompanion
+{
     public static string $currentSshConnectionKey = '';
 
     public static function setCurrentSshConnection(string $connectionKey): array
     {
         $sshConnections = self::getSshConnections();
 
-        if (!array_key_exists($connectionKey, $sshConnections)) {
+        if (! array_key_exists($connectionKey, $sshConnections)) {
             throw new \InvalidArgumentException("SSH connection key '$connectionKey' does not exist.");
         }
 
@@ -25,7 +26,7 @@ class DevCompanion {
 
     public static function getSshConnectionKeys(): array
     {
-        return  array_keys(self::getSshConnections());
+        return array_keys(self::getSshConnections());
     }
 
     public static function getCurrentSshConnectionKey(): string

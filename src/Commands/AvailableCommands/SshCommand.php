@@ -3,8 +3,9 @@
 namespace WebRegulate\DevCompanion\Commands\AvailableCommands;
 
 use Illuminate\Console\Command;
-use function Laravel\Prompts\select;
 use WebRegulate\DevCompanion\DevCompanion;
+
+use function Laravel\Prompts\select;
 
 class SshCommand extends Command
 {
@@ -28,6 +29,7 @@ class SshCommand extends Command
 
             if ($selectedConnectionKey === null) {
                 $this->error('No SSH connection selected. Exiting.');
+
                 return self::FAILURE;
             }
         } else {
@@ -45,11 +47,11 @@ class SshCommand extends Command
         $this->line("Connecting to SSH as {$user}@{$host} on port {$port}...");
 
         // Set up on connect initial command
-        $onConnectCommand = !empty($onConnectCommand) ? $onConnectCommand . ' ; ' : '';
+        $onConnectCommand = ! empty($onConnectCommand) ? $onConnectCommand.' ; ' : '';
         $onConnectCommand .= implode(' ; ', [
-            "echo \"\"",
-            "echo \"Remote directory: $(pwd)\"",
-            "echo \"Type exit to disconnect.\"",
+            'echo ""',
+            'echo "Remote directory: $(pwd)"',
+            'echo "Type exit to disconnect."',
             'exec sh',
         ]);
 

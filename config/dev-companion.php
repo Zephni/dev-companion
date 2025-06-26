@@ -10,7 +10,7 @@ return [
             'host' => '54.170.27.188',
             'port' => 22,
             'user' => 'forge',
-            'on_connect' => 'cd /home/forge/yourmoo.deliverysoftware.co.uk'
+            'on_connect' => 'cd /home/forge/yourmoo.deliverysoftware.co.uk',
         ],
     ],
 ];
