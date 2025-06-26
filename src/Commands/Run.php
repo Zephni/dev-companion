@@ -3,7 +3,7 @@
 namespace WebRegulate\DevCompanion\Commands;
 
 use Illuminate\Console\Command;
-use function Laravel\Prompts\text;
+
 use function Laravel\Prompts\select;
 
 class Run extends Command
@@ -21,10 +21,11 @@ class Run extends Command
         $commandsConfig = config('dev-companion.available-commands', []);
         if (empty($commandsConfig)) {
             $this->error('No commands available. Please check your configuration.');
+
             return self::FAILURE;
         }
 
-        while(true) {
+        while (true) {
             // Get available commands
             $availableCommands = [];
             foreach ($commandsConfig as $key => $commandClass) {
@@ -53,8 +54,9 @@ class Run extends Command
             $commandClass = $commandsConfig[$commandKey] ?? null;
 
             // If command class does not exist, show error and continue
-            if (!$commandClass) {
+            if (! $commandClass) {
                 $this->error('Command not found. Please try again.');
+
                 continue;
             }
 
