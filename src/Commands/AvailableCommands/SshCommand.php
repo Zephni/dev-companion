@@ -58,12 +58,19 @@ class SshCommand extends Command
         $host = $currentSshConnectionConfig['host'];
         $user = $currentSshConnectionConfig['user'];
         $port = $currentSshConnectionConfig['port'];
-        $onConnectCommand = $currentSshConnectionConfig['on_connect'] ?? null;
+        $onConnectCommands = $currentSshConnectionConfig['commands'] ?? null;
         $this->line("Connecting to SSH as {$user}@{$host} on port {$port}...");
 
-        // Set up on connect initial command
-        $onConnectCommand = ! empty($onConnectCommand) ? $onConnectCommand.' ; ' : '';
-        $onConnectCommand .= implode(' ; ', [
+        // If onConnectCommands is a string, change into an array
+        if (is_string($onConnectCommands)) {
+            $onConnectCommands = [$onConnectCommands];
+        }
+
+        // Set up user defined commands
+        $onConnectCommands = !empty($onConnectCommands) ? implode(' ; ', $onConnectCommands).' ; ' : '';
+
+        // Apply further consistent commands on connect
+        $onConnectCommands .= implode(' ; ', [
             'echo ""',
             'echo "Remote directory: $(pwd)"',
             'echo "Type exit to disconnect."',
@@ -79,11 +86,11 @@ class SshCommand extends Command
                 $modifiedCommands[] = $command;
                 $modifiedCommands[] = 'echo ""';
             }
-            $onConnectCommand .= ' ; '.implode(' ; ', $modifiedCommands);
+            $onConnectCommands .= ' ; '.implode(' ; ', $modifiedCommands);
         }
 
         // Start a shell session
-        $onConnectCommand .= ' ; exec sh';
+        $onConnectCommands .= ' ; exec sh';
 
         // Passthru to launch a fully interactive SSH session
         $descriptorspec = [
@@ -92,7 +99,7 @@ class SshCommand extends Command
             2 => ['file', 'php://stderr', 'w'],  // stderr
         ];
 
-        $command = trim("ssh -t -p {$port} {$user}@{$host} {$onConnectCommand}");
+        $command = trim("ssh -t -p {$port} {$user}@{$host} {$onConnectCommands}");
         $process = proc_open($command, $descriptorspec, $pipes, null, null, null);
 
         if (is_resource($process)) {

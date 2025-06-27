@@ -10,15 +10,15 @@ use WebRegulate\DevCompanion\Classes\InlineCommand;
 // config for WebRegulate/DevCompanion
 return [
     'available-commands' => [
-        'ssh' => SshCommand::class,
-        'versions' => InlineCommand::make('Check local versions [php, composer, npm, node]', function (InlineCommand $command) {
-            $command->runLocalCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
-        }),
-        'example' => InlineCommand::make('Example command', function (InlineCommand $command) {
+        '0' => InlineCommand::make('Example SSH command', function (InlineCommand $command) {
             $command->callSshCommand('production', [
                 'php -v',
                 'node -v',
             ]);
+        }),
+        'ssh' => SshCommand::class,
+        'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
+            $command->runLocalCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
         }),
     ],
     'ssh_connections' => [
@@ -26,13 +26,13 @@ return [
             'host' => 'XX.XX.XX.XX',
             'port' => 22,
             'user' => 'forge',
-            'on_connect' => 'cd /home/forge/your-dev-domain.com',
+            'commands' => ['cd /home/forge/your-dev-domain.com'],
         ],
         // 'production' => [
         //     'host' => 'XX.XX.XX.XX',
         //     'port' => 22,
         //     'user' => 'forge',
-        //     'on_connect' => 'cd /home/forge/your-production-domain.com',
+        //     'commands' => ['cd /home/forge/your-production-domain.com'],
         // ],
     ],
 ];
