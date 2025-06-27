@@ -26,25 +26,31 @@ class InlineCommand extends Command
         return new self($label, $callback, $options);
     }
 
-    public function localCommand(array $commands): void {
+    public function localCommand(array $commands): static {
         $this->call('dev-companion:local', [
             'commands' => $commands,
         ]);
+
+        return $this;
     }
 
-    public function sshCommand(?string $connectionKey, array $commands = []): void {
+    public function sshCommand(?string $connectionKey, array $commands = []): static {
         $this->call('dev-companion:ssh', [
             'connection_key' => $connectionKey,
             'commands' => $commands,
         ]);
+
+        return $this;
     }
 
-    public function runRegisteredCommand(string $commandKey): void
+    public function registeredCommand(string $commandKey, array $arguments): static
     {
         $this->newLine();
         $this->line("<info>Registered Command:</info>   <comment>{$commandKey}</comment>");
 
-        $this->call(DevCompanion::$registeredCommands[$commandKey]);
+        $this->call(DevCompanion::$registeredCommands[$commandKey], $arguments);
+
+        return $this;
     }
 
     public function getDescription(): string

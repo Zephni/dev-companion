@@ -11,13 +11,16 @@ use WebRegulate\DevCompanion\Classes\InlineCommand;
 return [
     'commands' => [
         'deploy_example' => InlineCommand::make('Deploy example', function (InlineCommand $command) {
-            $command->sshCommand('development', [
-                'git fetch --all',
-                'git reset --hard origin/main',
-                'composer install --no-dev --optimize-autoloader',
-                'npm run build',
-                'exit',
-            ]);
+            $command
+                ->localCommand([
+                    'git push origin development'
+                ])->sshCommand('development', [
+                    'git fetch --all',
+                    'git reset --hard origin/main',
+                    'composer install --no-dev --optimize-autoloader',
+                    'npm run build',
+                    'exit',
+                ]);
         }),
         'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
             $command->localCommand(['php -v', 'composer -V', 'npm -v', 'node -v']);
