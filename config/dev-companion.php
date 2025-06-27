@@ -10,8 +10,14 @@ use WebRegulate\DevCompanion\Classes\InlineCommand;
 // config for WebRegulate/DevCompanion
 return [
     'commands' => [
-        'example' => InlineCommand::make('Example SSH command', function (InlineCommand $command) {
-            $command->sshCommand('production', ['php -v', 'composer -V', 'npm -v', 'node -v']);
+        'deploy_example' => InlineCommand::make('Deploy example', function (InlineCommand $command) {
+            $command->sshCommand('development', [
+                'git fetch --all',
+                'git reset --hard origin/main',
+                'composer install --no-dev --optimize-autoloader',
+                'npm run build',
+                'exit',
+            ]);
         }),
         'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
             $command->localCommand(['php -v', 'composer -V', 'npm -v', 'node -v']);
@@ -19,7 +25,7 @@ return [
         'ssh' => SshCommand::class,
     ],
     'ssh_connections' => [
-        'devserver' => [
+        'development' => [
             'host' => 'XX.XX.XX.XX',
             'port' => 22,
             'user' => 'forge',
