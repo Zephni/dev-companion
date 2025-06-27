@@ -1,5 +1,9 @@
 <?php
 
+if(env('APP_ENV') !== 'local') {
+    return [];
+}
+
 use WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand;
 use WebRegulate\DevCompanion\Classes\InlineCommand;
 
