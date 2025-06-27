@@ -3,6 +3,7 @@ namespace WebRegulate\DevCompanion\Classes;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Output\OutputInterface;
+use WebRegulate\DevCompanion\Commands\RunCommand;
 
 class InlineCommand extends Command
 {
@@ -38,6 +39,22 @@ class InlineCommand extends Command
                 break;
             }
         }
+    }
+
+    public function runRegisteredCommand(string $commandKey): void
+    {
+        $this->newLine();
+        $this->line("<info>Registered Command:</info>   <comment>{$commandKey}</comment>");
+
+        // Run artisan command
+        $this->call(RunCommand::$registeredCommands[$commandKey]);
+    }
+
+    public function callSshCommand(?string $connectionKey, array $commands = []): void {
+        $this->call('dev-companion:ssh', [
+            'connection_key' => $connectionKey,
+            'commands' => $commands,
+        ]);
     }
 
     public function getDescription(): string

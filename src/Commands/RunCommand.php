@@ -14,6 +14,8 @@ class RunCommand extends Command
 
     public $description = 'Run DevCompanion';
 
+    public static $registeredCommands = [];
+
     public function handle(): int
     {
         $this->line('');
@@ -35,10 +37,12 @@ class RunCommand extends Command
                 if($command instanceof InlineCommand) {
                     $command->setDefinition(new InputDefinition([]));
                     $availableCommands[$key] = $command->getDescription();
+                    static::$registeredCommands[$key] = $command;
                 }
                 elseif (class_exists($command)) {
                     $commandInstance = new $command;
                     $availableCommands[$key] = $commandInstance->getDescription();
+                    static::$registeredCommands[$key] = $commandInstance;
                 } else {
                     $this->error("Command class {$command} does not exist.");
                 }

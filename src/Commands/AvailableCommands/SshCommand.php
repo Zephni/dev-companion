@@ -9,32 +9,47 @@ use function Laravel\Prompts\select;
 
 class SshCommand extends Command
 {
-    public $signature = 'dev-companion:ssh';
+    public $signature = 'dev-companion:ssh {connection_key?} {commands?*}';
 
     public $description = 'Access ssh shell';
 
     public function handle(): int
     {
+        // Get passed arguments
+        $connectionKey = $this->argument('connection_key');
+        $passedCommands = $this->argument('commands');
+
+        // Display a message to the user
         $this->comment('Accessing configured SSH Shell.');
 
-        // If more than one SSH connection is configured, prompt the user to select one
-        $sshConnections = DevCompanion::getSshConnectionKeys();
-
-        if (count($sshConnections) > 1) {
-            $selectedConnectionKey = select(
-                label: 'Select SSH Connection',
-                options: $sshConnections,
-                scroll: 10,
-            );
-
-            if ($selectedConnectionKey === null) {
-                $this->error('No SSH connection selected. Exiting.');
-
-                return self::FAILURE;
-            }
-        } else {
-            $selectedConnectionKey = $sshConnections[0];
+        // If connection key is provided, use it directly
+        if(!empty($connectionKey)) {
+            $selectedConnectionKey = $connectionKey;
         }
+        // Otherwise, either select from configured connections or use the first one if only one exists
+        else {
+            // If more than one SSH connection is configured, prompt the user to select one
+            $sshConnections = DevCompanion::getSshConnectionKeys();
+    
+            if (count($sshConnections) > 1) {
+                $selectedConnectionKey = select(
+                    label: 'Select SSH Connection',
+                    options: $sshConnections,
+                    scroll: 10,
+                );
+    
+                if ($selectedConnectionKey === null) {
+                    $this->error('No SSH connection selected. Exiting.');
+    
+                    return self::FAILURE;
+                }
+            } else {
+                $selectedConnectionKey = $sshConnections[0];
+            }
+        }
+
+        // Connectioon
+        $this->line("Using connection key: {$connectionKey}");
 
         // Set current SSH connection
         $currentSshConnectionConfig = DevCompanion::setCurrentSshConnection($selectedConnectionKey);
@@ -52,8 +67,23 @@ class SshCommand extends Command
             'echo ""',
             'echo "Remote directory: $(pwd)"',
             'echo "Type exit to disconnect."',
-            'exec sh',
+            'echo ""',
         ]);
+
+        // If additional commands were passed, append them to the on connect command
+        if (! empty($passedCommands)) {
+            $modifiedCommands = [];
+            foreach ($passedCommands as $command) {
+                $modifiedCommands[] = 'echo "Running: '.$command.'"';
+                $modifiedCommands[] = 'echo "----------------------------------"';
+                $modifiedCommands[] = $command;
+                $modifiedCommands[] = 'echo ""';
+            }
+            $onConnectCommand .= ' ; '.implode(' ; ', $modifiedCommands);
+        }
+
+        // Start a shell session
+        $onConnectCommand .= ' ; exec sh';
 
         // Passthru to launch a fully interactive SSH session
         $descriptorspec = [

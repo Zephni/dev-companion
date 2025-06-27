@@ -9,7 +9,13 @@ return [
         'ssh' => SshCommand::class,
         'versions' => InlineCommand::make('Check local versions [php, composer, npm, node]', function (InlineCommand $command) {
             $command->runLocalCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
-        })
+        }),
+        'example' => InlineCommand::make('Example command', function (InlineCommand $command) {
+            $command->callSshCommand('production', [
+                'php -v',
+                'node -v',
+            ]);
+        }),
     ],
     'ssh_connections' => [
         'devserver' => [
