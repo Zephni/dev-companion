@@ -2,9 +2,33 @@
 
 namespace WebRegulate\DevCompanion;
 
+use WebRegulate\DevCompanion\Classes\InlineCommand;
+use Symfony\Component\Console\Input\InputDefinition;
+
 class DevCompanion
 {
+    public static $registeredCommands = [];
     public static string $currentSshConnectionKey = '';
+
+    public static function getCommands(array $commandsConfig): array
+    {
+        // Get commands
+        $commands = [];
+        foreach ($commandsConfig as $key => $command) {
+            if($command instanceof InlineCommand) {
+                $command->setDefinition(new InputDefinition([]));
+                $commands[$key] = $command->getDescription();
+                static::$registeredCommands[$key] = $command;
+            }
+            elseif (class_exists($command)) {
+                $commandInstance = new $command;
+                $commands[$key] = $commandInstance->getDescription();
+                static::$registeredCommands[$key] = $commandInstance;
+            }
+        }
+
+        return $commands;
+    }
 
     public static function setCurrentSshConnection(string $connectionKey): array
     {

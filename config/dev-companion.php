@@ -1,6 +1,6 @@
 <?php
 
-if(env('APP_ENV') !== 'local') {
+if(env('APP_ENV') !== 'local' || !app()->runningInConsole()) {
     return [];
 }
 
@@ -9,17 +9,14 @@ use WebRegulate\DevCompanion\Classes\InlineCommand;
 
 // config for WebRegulate/DevCompanion
 return [
-    'available-commands' => [
-        '0' => InlineCommand::make('Example SSH command', function (InlineCommand $command) {
-            $command->callSshCommand('production', [
-                'php -v',
-                'node -v',
-            ]);
+    'commands' => [
+        'example' => InlineCommand::make('Example SSH command', function (InlineCommand $command) {
+            $command->sshCommands('production', ['php -v', 'composer -V', 'npm -v', 'node -v']);
+        }),
+        'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
+            $command->localCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
         }),
         'ssh' => SshCommand::class,
-        'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
-            $command->runLocalCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
-        }),
     ],
     'ssh_connections' => [
         'devserver' => [

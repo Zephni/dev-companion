@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use function Laravel\Prompts\select;
 use WebRegulate\DevCompanion\Classes\InlineCommand;
+use WebRegulate\DevCompanion\DevCompanion;
 
 class RunCommand extends Command
 {
@@ -14,16 +15,14 @@ class RunCommand extends Command
 
     public $description = 'Run DevCompanion';
 
-    public static $registeredCommands = [];
-
     public function handle(): int
     {
         $this->line('');
         $this->comment('Welcome to DevCompanion!');
         $this->line('----------------------------------------');
 
-        // Get all available commands from config
-        $commandsConfig = config('dev-companion.available-commands', []);
+        // Get commands from config
+        $commandsConfig = config('dev-companion.commands', []);
         if (empty($commandsConfig)) {
             $this->error('No commands available. Please check your configuration.');
 
@@ -31,27 +30,13 @@ class RunCommand extends Command
         }
 
         while (true) {
-            // Get available commands
-            $availableCommands = [];
-            foreach ($commandsConfig as $key => $command) {
-                if($command instanceof InlineCommand) {
-                    $command->setDefinition(new InputDefinition([]));
-                    $availableCommands[$key] = $command->getDescription();
-                    static::$registeredCommands[$key] = $command;
-                }
-                elseif (class_exists($command)) {
-                    $commandInstance = new $command;
-                    $availableCommands[$key] = $commandInstance->getDescription();
-                    static::$registeredCommands[$key] = $commandInstance;
-                } else {
-                    $this->error("Command class {$command} does not exist.");
-                }
-            }
+            // Get commands
+            $commands = DevCompanion::getCommands($commandsConfig);
 
             // Choose command to run
             $commandKey = select(
                 label: 'Available Commands',
-                options: $availableCommands + ['exit' => 'Exit'],
+                options: $commands + ['exit' => 'Exit'],
                 scroll: 10,
             );
 

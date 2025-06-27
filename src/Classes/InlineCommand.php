@@ -2,8 +2,7 @@
 namespace WebRegulate\DevCompanion\Classes;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Output\OutputInterface;
-use WebRegulate\DevCompanion\Commands\RunCommand;
+use WebRegulate\DevCompanion\DevCompanion;
 
 class InlineCommand extends Command
 {
@@ -27,18 +26,17 @@ class InlineCommand extends Command
         return new self($label, $callback, $options);
     }
 
-    public function runLocalCommands(array $localCommands): void {
-        foreach ($localCommands as $command) {
-            $this->newLine();
-            $this->line("<info>Command:</info>   <comment>{$command}</comment>");
+    public function localCommands(array $commands): void {
+        $this->call('dev-companion:local', [
+            'commands' => $commands,
+        ]);
+    }
 
-            passthru($command, $exitCode);
-            
-            if ($exitCode !== 0) {
-                $this->error("Command '{$command}' failed with exit code {$exitCode}.");
-                break;
-            }
-        }
+    public function sshCommand(?string $connectionKey, array $commands = []): void {
+        $this->call('dev-companion:ssh', [
+            'connection_key' => $connectionKey,
+            'commands' => $commands,
+        ]);
     }
 
     public function runRegisteredCommand(string $commandKey): void
@@ -46,15 +44,7 @@ class InlineCommand extends Command
         $this->newLine();
         $this->line("<info>Registered Command:</info>   <comment>{$commandKey}</comment>");
 
-        // Run artisan command
-        $this->call(RunCommand::$registeredCommands[$commandKey]);
-    }
-
-    public function callSshCommand(?string $connectionKey, array $commands = []): void {
-        $this->call('dev-companion:ssh', [
-            'connection_key' => $connectionKey,
-            'commands' => $commands,
-        ]);
+        $this->call(DevCompanion::$registeredCommands[$commandKey]);
     }
 
     public function getDescription(): string
