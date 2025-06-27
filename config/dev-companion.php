@@ -11,10 +11,10 @@ use WebRegulate\DevCompanion\Classes\InlineCommand;
 return [
     'commands' => [
         'example' => InlineCommand::make('Example SSH command', function (InlineCommand $command) {
-            $command->sshCommands('production', ['php -v', 'composer -V', 'npm -v', 'node -v']);
+            $command->sshCommand('production', ['php -v', 'composer -V', 'npm -v', 'node -v']);
         }),
         'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
-            $command->localCommands(['php -v', 'composer -V', 'npm -v', 'node -v']);
+            $command->localCommand(['php -v', 'composer -V', 'npm -v', 'node -v']);
         }),
         'ssh' => SshCommand::class,
     ],

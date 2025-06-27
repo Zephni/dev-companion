@@ -26,7 +26,7 @@ class InlineCommand extends Command
         return new self($label, $callback, $options);
     }
 
-    public function localCommands(array $commands): void {
+    public function localCommand(array $commands): void {
         $this->call('dev-companion:local', [
             'commands' => $commands,
         ]);
