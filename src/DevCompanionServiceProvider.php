@@ -18,18 +18,20 @@ class DevCompanionServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
 
-        // Console only
-        $package
-            ->name('dev-companion')
-            ->hasConfigFile()
-            ->hasCommands(
-                RunCommand::class,
-                SshCommand::class,
-            )
-            ->hasInstallCommand(function(InstallCommand $command) {
-                $command
-                    ->publishConfigFile();
-            });
+        // Local console only
+        if(app()->isLocal()) {
+            $package
+                ->name('dev-companion')            
+                ->hasConfigFile()
+                ->hasCommands(
+                    RunCommand::class,
+                    SshCommand::class,
+                )
+                ->hasInstallCommand(function(InstallCommand $command) {
+                    $command
+                        ->publishConfigFile();
+                });
+        }
 
     }
 }
