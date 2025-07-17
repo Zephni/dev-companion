@@ -122,7 +122,7 @@ class GitUpload extends Command
                     }
     
                     // Notify the user that the file was successfully uploaded
-                    $this->line("<info>✅ Uploaded successfully:</info>");
+                    $this->line("<info>✅ Uploaded successfully</info>");
                     $this->newLine();
                 }
             }
