@@ -1,11 +1,13 @@
 <?php
 
+
 if(env('APP_ENV') !== 'local' || !app()->runningInConsole()) {
     return [];
 }
 
-use WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand;
 use WebRegulate\DevCompanion\Classes\InlineCommand;
+use WebRegulate\DevCompanion\Commands\AvailableCommands\SshCommand;
+use WebRegulate\DevCompanion\Commands\AvailableCommands\GitUpload;
 
 // config for WebRegulate/DevCompanion
 return [
@@ -25,6 +27,7 @@ return [
         'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
             $command->localCommand(['php -v', 'composer -V', 'npm -v', 'node -v']);
         }),
+        'git' => GitUpload::class,
         'ssh' => SshCommand::class,
     ],
     'ssh_connections' => [
