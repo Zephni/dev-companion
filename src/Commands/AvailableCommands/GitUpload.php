@@ -11,7 +11,7 @@ class GitUpload extends Command
 {
     public $signature = 'dev-companion:git-upload {connection_key?}';
 
-    public $description = 'Access ssh shell';
+    public $description = 'Uploads staged git files to a remote server via SSH.';
 
     public function handle(): int
     {
@@ -121,7 +121,7 @@ class GitUpload extends Command
                 }
 
                 // Notify the user that the file was successfully uploaded
-                $this->line("<info>Uploaded: $file</info>");
+                $this->line("<info>✅ Uploaded successfully:</info>");
                 $this->newLine();
             }
         }
