@@ -26,6 +26,12 @@ class InlineCommand extends Command
         return new self($label, $callback, $options);
     }
 
+    public function displayCommands(bool $bool = true): static {
+        DevCompanion::$displayCommands = $bool;
+
+        return $this;
+    }
+
     public function localCommand(array $commands): static {
         $this->call('dev-companion:local', [
             'commands' => $commands,
@@ -39,6 +45,12 @@ class InlineCommand extends Command
             'connection_key' => $connectionKey,
             'commands' => $commands,
         ]);
+
+        return $this;
+    }
+
+    public function next(callable $callback): static {
+        call_user_func($callback, $this);
 
         return $this;
     }

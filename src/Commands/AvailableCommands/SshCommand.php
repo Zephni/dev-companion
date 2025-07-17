@@ -4,7 +4,6 @@ namespace WebRegulate\DevCompanion\Commands\AvailableCommands;
 
 use Illuminate\Console\Command;
 use WebRegulate\DevCompanion\DevCompanion;
-
 use function Laravel\Prompts\select;
 
 class SshCommand extends Command
@@ -49,7 +48,7 @@ class SshCommand extends Command
         }
 
         // Connectioon
-        $this->line("Using connection key: {$connectionKey}");
+        $this->line("Using connection key: {$selectedConnectionKey}");
 
         // Set current SSH connection
         $currentSshConnectionConfig = DevCompanion::setCurrentSshConnection($selectedConnectionKey);
@@ -64,6 +63,13 @@ class SshCommand extends Command
         // If onConnectCommands is a string, change into an array
         if (is_string($onConnectCommands)) {
             $onConnectCommands = [$onConnectCommands];
+        }
+
+        // Replace vars if passed
+        if (!empty($onConnectCommands)) {
+            foreach ($onConnectCommands as &$command) {
+                $command = DevCompanion::applyReplacementVars($command, $currentSshConnectionConfig);
+            }
         }
 
         // Set up user defined commands

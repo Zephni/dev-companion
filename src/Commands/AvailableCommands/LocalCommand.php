@@ -5,8 +5,6 @@ namespace WebRegulate\DevCompanion\Commands\AvailableCommands;
 use Illuminate\Console\Command;
 use WebRegulate\DevCompanion\DevCompanion;
 
-use function Laravel\Prompts\select;
-
 class LocalCommand extends Command
 {
     public $signature = 'dev-companion:local {commands?*}';
@@ -29,7 +27,13 @@ class LocalCommand extends Command
 
         foreach ($passedCommands as $command) {
             $this->newLine();
-            $this->line("<info>Command:</info>   <comment>{$command}</comment>");
+
+            if(DevCompanion::$displayCommands) {
+                $this->line("<info>Command:</info>   <comment>{$command}</comment>");
+            }
+
+            // Remove newlines
+            $command = str_replace(["\n", "\r"], '', $command);
 
             passthru($command, $exitCode);
             

@@ -9,6 +9,7 @@ class DevCompanion
 {
     public static $registeredCommands = [];
     public static string $currentSshConnectionKey = '';
+    public static bool $displayCommands = true;
 
     public static function getCommands(array $commandsConfig): array
     {
@@ -72,5 +73,25 @@ class DevCompanion
         }
 
         return $connectionConfig;
+    }
+
+    public static function applyReplacementVars(string $string, array $keyValues): string
+    {
+        foreach ($keyValues as $key => $value) {
+            // First check if the key exists in the string
+            if (strpos($string, '{' . $key . '}') === false) {
+                continue;
+            }
+
+            // If key has . characters, use as nested key
+            if(str_contains($key, '.')) {
+                $value = data_get($keyValues, $key);
+            }
+
+            // Replace the key with the value
+            $string = str_replace('{' . $key . '}', $value, $string);
+        }
+
+        return $string;
     }
 }
