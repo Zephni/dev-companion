@@ -13,14 +13,13 @@ class GitUpload extends Command
 
     public $description = 'Uploads staged git files to a remote server via SSH.';
 
+    public static $filename = 'dev-companion.staged-git-files.txt';
+
     public function handle(): int
     {
         try {
             // Get passed arguments
             $connectionKey = $this->argument('connection_key');
-    
-            // Define the filename for staged git files
-            $filename = 'dev-companion.staged-git-files.txt';
     
             // Display a message to the user
             $this->comment('Accessing configured SSH Shell.');
@@ -43,8 +42,7 @@ class GitUpload extends Command
         
                     if ($selectedConnectionKey === null) {
                         $this->error('No SSH connection selected. Exiting.');
-        
-                        return self::FAILURE;
+                        return $this->cleanupAndReturnResult(self::FAILURE);
                     }
                 } else {
                     $selectedConnectionKey = $sshConnections[0];
@@ -67,25 +65,25 @@ class GitUpload extends Command
             DevCompanion::$displayCommands = false;
             
             // Delete any existing staged git files file
-            if (file_exists($filename)) unlink($filename);
+            if (file_exists(static::$filename)) unlink(static::$filename);
     
             // Get staged git files
-            exec("git diff --cached --name-only > $filename", $output, $exitCode);
+            exec('git diff --cached --name-only > '.static::$filename, $output, $exitCode);
     
             // Exit if there was an error getting staged git files
             if ($exitCode !== 0) {
                 $this->error('Failed to get staged git files. Reason: ' . implode("\n", $output));
-                return self::FAILURE;
+                return $this->cleanupAndReturnResult(self::FAILURE);
             }
     
             // Read the staged git files from the file into an array
-            $stagedGitFiles = preg_split('/\r\n|\n|\r/', file_get_contents($filename) ?? '');
+            $stagedGitFiles = preg_split('/\r\n|\n|\r/', file_get_contents(static::$filename) ?? '');
             $stagedGitFiles = array_filter($stagedGitFiles, fn($file) => trim($file) !== '');
     
             // If no staged files, notify the user and exit
             if(empty($stagedGitFiles)) {
                 $this->line('<info>No files staged for commit.</info>');
-                return self::SUCCESS;
+                return $this->cleanupAndReturnResult(self::SUCCESS);
             }
     
             $this->line('<info>Files staged for commit:</info>');
@@ -128,14 +126,20 @@ class GitUpload extends Command
             }
         } catch (\Exception $e) {
             $this->error('An error occurred: ' . $e->getMessage());
-            return self::FAILURE;
+            return $this->cleanupAndReturnResult(self::FAILURE);
         }
 
+        return $this->cleanupAndReturnResult(self::SUCCESS);
+    }
+
+    private function cleanupAndReturnResult(int $result): int
+    {
         // Remove the staged git files file
-        if (file_exists($filename)) {
-            unlink($filename);
+        if (file_exists(static::$filename)) {
+            unlink(static::$filename);
         }
 
-        return self::SUCCESS;
+        // Return result
+        return $result;
     }
 }
