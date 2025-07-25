@@ -13,7 +13,7 @@ return [
     'commands' => [
         'deploy_example' => InlineCommand::make('Deploy example', function (InlineCommand $command) {
             // Select which branch to deploy 
-            $branch = $this->select('Select a branch to sync', ['development', 'main']);
+            $branch = $command->select('Select a branch to sync', ['development', 'main']);
 
             // Set server based on branch selection
             $server = match($branch) {
