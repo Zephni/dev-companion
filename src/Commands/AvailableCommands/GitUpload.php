@@ -2,12 +2,10 @@
 
 namespace WebRegulate\DevCompanion\Commands\AvailableCommands;
 
-use Illuminate\Console\Command;
-use WebRegulate\DevCompanion\Classes\InlineCommand;
 use WebRegulate\DevCompanion\DevCompanion;
-use function Laravel\Prompts\select;
+use WebRegulate\DevCompanion\Classes\BaseCommand;
 
-class GitUpload extends Command
+class GitUpload extends BaseCommand
 {
     public $signature = 'dev-companion:git-upload {connection_key?}';
 
@@ -34,7 +32,7 @@ class GitUpload extends Command
                 $sshConnections = DevCompanion::getSshConnectionKeys();
         
                 if (count($sshConnections) > 1) {
-                    $selectedConnectionKey = select(
+                    $selectedConnectionKey = $this->select(
                         label: 'Select SSH Connection',
                         options: $sshConnections,
                         scroll: 10,

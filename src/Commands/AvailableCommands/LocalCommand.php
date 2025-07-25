@@ -2,10 +2,10 @@
 
 namespace WebRegulate\DevCompanion\Commands\AvailableCommands;
 
-use Illuminate\Console\Command;
 use WebRegulate\DevCompanion\DevCompanion;
+use WebRegulate\DevCompanion\Classes\BaseCommand;
 
-class LocalCommand extends Command
+class LocalCommand extends BaseCommand
 {
     public $signature = 'dev-companion:local {commands?*}';
 

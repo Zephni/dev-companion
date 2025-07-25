@@ -2,11 +2,10 @@
 
 namespace WebRegulate\DevCompanion\Commands\AvailableCommands;
 
-use Illuminate\Console\Command;
+use WebRegulate\DevCompanion\Classes\BaseCommand;
 use WebRegulate\DevCompanion\DevCompanion;
-use function Laravel\Prompts\select;
 
-class SshCommand extends Command
+class SshCommand extends BaseCommand
 {
     public $signature = 'dev-companion:ssh {connection_key?} {commands?*}';
 
@@ -31,7 +30,7 @@ class SshCommand extends Command
             $sshConnections = DevCompanion::getSshConnectionKeys();
     
             if (count($sshConnections) > 1) {
-                $selectedConnectionKey = select(
+                $selectedConnectionKey = $this->select(
                     label: 'Select SSH Connection',
                     options: $sshConnections,
                     scroll: 10,
