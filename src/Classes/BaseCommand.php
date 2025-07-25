@@ -57,8 +57,17 @@ class BaseCommand extends Command
         return $this->description ?? 'Unnamed Command';
     }
 
+    /**
+     * Select a server key if multiple servers are configured, otherwise return the single configured server.
+     */
     public function selectServerKey(?string $label = 'Select a server')
     {
+        $connectionKeys = DevCompanion::getSshConnectionKeys();
+
+        if (count($connectionKeys) === 1) {
+            return array_key_first($connectionKeys);
+        }
+        
         return $this->select($label, DevCompanion::getSshConnectionKeys());
     }
 
