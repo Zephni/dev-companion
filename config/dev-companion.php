@@ -24,18 +24,19 @@ return [
             // ...or instead, allow user to select which server to deploy to (If multiple configured)
             // $server = $this->selectServerKey("Select a server to deploy the `$branch` branch to");
 
-            $command
-                // Push the selected branch to the remote repository
-                ->localCommand([
-                    "git push origin $branch",
-                // Deploy the branch to the selected server
-                ])->sshCommand($server, [
-                    'git fetch --all',
-                    "git reset --hard origin/$branch",
-                    'composer install --no-dev --optimize-autoloader',
-                    'npm run build',
-                    'exit',
-                ]);
+            // Push the selected branch to the remote repository
+            $command->localCommand([
+                "git push origin $branch",
+            ]);
+
+            // Deploy the branch to the selected server
+            $command->sshCommand($server, [
+                'git fetch --all',
+                "git reset --hard origin/$branch",
+                'composer install --no-dev --optimize-autoloader',
+                'npm run build',
+                'exit',
+            ]);
         }),
         'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
             $command->localCommand([
