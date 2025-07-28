@@ -24,6 +24,14 @@ return [
             // ...or instead, allow user to select which server to deploy to (If multiple configured)
             // $server = $this->selectServerKey("Select a server to deploy the `$branch` branch to");
 
+            // If main branch chossen, first merge development into main
+            if($branch == 'main') {
+                $command->localCommand([
+                    'git checkout main',
+                    'git merge development',
+                ]);
+            }
+
             // Push the selected branch to the remote repository
             $command->localCommand([
                 "git push origin $branch",
