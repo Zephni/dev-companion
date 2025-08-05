@@ -16,8 +16,12 @@ class BaseCommand extends Command
         return $this;
     }
 
-    public function localCommand(array $commands): static
+    public function localCommand(string|array $commands): static
     {
+        if (is_string($commands)) {
+            $commands = explode(PHP_EOL, $commands);
+        }
+
         $this->call('dev-companion:local', [
             'commands' => $commands,
         ]);
@@ -31,6 +35,23 @@ class BaseCommand extends Command
             'connection_key' => $connectionKey,
             'commands' => $commands,
         ]);
+
+        return $this;
+    }
+
+    /**
+     * Conditionally execute a callback based on a boolean or callable condition.
+     * @param callable $callback Passes only the current command instance
+     */
+    public function if(bool|callable $condition, callable $callback): static
+    {
+        if (is_callable($condition)) {
+            $condition = call_user_func($condition, $this);
+        }
+
+        if ($condition) {
+            call_user_func($callback, $this);
+        }
 
         return $this;
     }
@@ -55,6 +76,30 @@ class BaseCommand extends Command
     public function getDescription(): string
     {
         return $this->description ?? 'Unnamed Command';
+    }
+
+    public function getRegisteredCommands(): array
+    {
+        return DevCompanion::$registeredCommands;
+    }
+
+    public function getConfig(?string $key = null): mixed
+    {
+        return DevCompanion::getConfig($key);
+    }
+
+    public function getBranchToSshMappings(): array
+    {
+        $sshConnections = DevCompanion::getSshConnections();
+        
+        // return collect($sshConnections)->pluck('branch')->toArray();
+        return collect($sshConnections)
+            ->mapWithKeys(function ($connection, $key) {
+                if(isset($connection['branch'])) {
+                    return [$connection['branch'] => $key];
+                }
+            })
+            ->toArray();
     }
 
     /**

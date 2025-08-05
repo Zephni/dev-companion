@@ -58,7 +58,6 @@ class DevCompanion
     {
         return self::$currentSshConnectionKey;
     }
-
     public static function getCurrentConnectionConfig(): array
     {
         $connectionKey = self::getCurrentSshConnectionKey();
@@ -73,6 +72,17 @@ class DevCompanion
         }
 
         return $connectionConfig;
+    }
+
+    public static function getConfig(?string $key = null): mixed
+    {
+        $config = config('dev-companion', []);
+
+        if (empty($key)) {
+            return $config;
+        }
+
+        return data_get($config, $key);
     }
 
     public static function applyReplacementVars(string $string, array $keyValues): string
