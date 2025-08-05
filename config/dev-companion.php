@@ -17,7 +17,7 @@ return [
             $sshMappings = $command->getBranchToSshMappings();
 
             // Select which branch to deploy
-            $branch = $command->select('Select a branch to sync', array_values($sshMappings));
+            $branch = $command->select('Select a branch to sync', array_keys($sshMappings));
 
             // Execute commands
             $command
