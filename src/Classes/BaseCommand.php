@@ -56,7 +56,7 @@ class BaseCommand extends Command
         return $this;
     }
 
-    public function next(callable $callback): static
+    public function then(callable $callback): static
     {
         call_user_func($callback, $this);
 
