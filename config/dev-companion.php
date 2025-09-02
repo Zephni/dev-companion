@@ -35,7 +35,7 @@ return [
                     'git fetch --all',
                     "git reset --hard origin/$branch",
                     'composer install --no-dev --optimize-autoloader',
-                    'npm install --omit=dev',
+                    'npm install',
                     'npm run build',
                     'exit',
                 ])
