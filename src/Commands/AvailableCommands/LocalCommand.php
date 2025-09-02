@@ -22,9 +22,6 @@ class LocalCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        // Display a message to the user
-        $this->comment('Running local commands.');
-
         foreach ($passedCommands as $command) {
             $this->newLine();
 

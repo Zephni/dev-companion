@@ -11,8 +11,6 @@ class GitUpload extends BaseCommand
 
     public $description = 'Uploads staged git files to a remote server via SSH.';
 
-    public static $filename = 'dev-companion.staged-git-files.txt';
-
     public function handle(): int
     {
         try {
@@ -60,28 +58,24 @@ class GitUpload extends BaseCommand
             $basePath = $currentSshConnectionConfig['base_path'] ?? '';
             $this->line("Using connection and path {$user}@{$host}:{$basePath} on port {$port}...");
     
-            DevCompanion::$displayCommands = false;
+            $this->displayCommands(false);
             
-            // Delete any existing staged git files file
-            if (file_exists(static::$filename)) unlink(static::$filename);
-    
-            // Get staged git files
-            exec('git diff --cached --name-only > '.static::$filename, $output, $exitCode);
-    
+            // Get staged git files directly from command output
+            exec('git diff --cached --name-only', $output, $exitCode);
+
             // Exit if there was an error getting staged git files
             if ($exitCode !== 0) {
                 $this->error('Failed to get staged git files. Reason: ' . implode("\n", $output));
-                return $this->cleanupAndReturnResult(self::FAILURE);
+                return self::FAILURE;
             }
-    
-            // Read the staged git files from the file into an array
-            $stagedGitFiles = preg_split('/\r\n|\n|\r/', file_get_contents(static::$filename) ?? '');
-            $stagedGitFiles = array_filter($stagedGitFiles, fn($file) => trim($file) !== '');
+
+            // Clean up output and filter empty lines
+            $stagedGitFiles = array_filter(array_map('trim', $output), fn($file) => $file !== '');
     
             // If no staged files, notify the user and exit
             if(empty($stagedGitFiles)) {
                 $this->line('<info>No files staged for commit.</info>');
-                return $this->cleanupAndReturnResult(self::SUCCESS);
+                return self::SUCCESS;
             }
     
             $this->line('<info>Files staged for commit:</info>');
@@ -132,12 +126,7 @@ class GitUpload extends BaseCommand
 
     private function cleanupAndReturnResult(int $result): int
     {
-        // Remove the staged git files file
-        if (file_exists(static::$filename)) {
-            unlink(static::$filename);
-        }
-
-        // Return result
-        return $result;
+    // No file cleanup needed
+    return $result;
     }
 }
