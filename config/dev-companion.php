@@ -32,7 +32,8 @@ return [
                 ])
                 // Deploy the branch to the selected server
                 ->sshCommand($sshMappings[$branch], [
-                    'git fetch --all',
+                    'git fetch --prune origin',
+                    "git fetch origin {$branch}:refs/remotes/origin/{$branch}",
                     "git reset --hard origin/$branch",
                     'composer install --no-dev --optimize-autoloader',
                     'npm install',
@@ -62,20 +63,20 @@ return [
             
             // Execute commands
             $command
-                // Push the selected branch to the remote repository
                 ->localCommand([
                     "git checkout $branch",
                     "git push origin $branch",
                 ])
-                // Deploy the branch to the $sshConnection server
                 ->sshCommand($sshConnection, [
-                    'git fetch --all',
-                    "git reset --hard origin/$branch",
+                    'git fetch --prune origin',
+                    "git fetch origin {$branch}:refs/remotes/origin/{$branch}",
+                    'git branch -r',
+                    "git reset --hard origin/{$branch}",
                     'composer install --no-dev --optimize-autoloader',
                     'npm install',
                     'npm run build',
                     'exit',
-                ]); 
+                ]);
         }),
 
         // Composer update
