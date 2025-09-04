@@ -45,6 +45,39 @@ return [
                 ]));
         }),
 
+        // Deploy chosen branch to a selected SSH connection
+        'branch' => InlineCommand::make('Deploy chosen branch to a selected SSH Connection', function (InlineCommand $command) {
+            // Select which SSH connection to deploy to
+            $sshConnection = $command->select('Select a SSH connection to deploy to', array_values($command->getBranchToSshMappings()));
+
+            // Allow user to select which branch to deploy to dev
+            $getAllBranches = trim(shell_exec('git branch --all --format="%(refname:short)"'));
+            $branches = array_filter(explode("\n", $getAllBranches), function($branch) {
+                return !str_starts_with($branch, 'remotes/')
+                    && !str_starts_with($branch, 'origin/')
+                    && !str_starts_with($branch, '*');
+            });
+            
+            $branch = $command->select("Select a branch to deploy to {$sshConnection}", $branches);
+            
+            // Execute commands
+            $command
+                // Push the selected branch to the remote repository
+                ->localCommand([
+                    "git checkout $branch",
+                    "git push origin $branch",
+                ])
+                // Deploy the branch to the $sshConnection server
+                ->sshCommand($sshConnection, [
+                    'git fetch --all',
+                    "git reset --hard origin/$branch",
+                    'composer install --no-dev --optimize-autoloader',
+                    'npm install',
+                    'npm run build',
+                    'exit',
+                ]); 
+        }),
+
         // Check local versions
         'versions' => InlineCommand::make('Check local versions', function (InlineCommand $command) {
             $command->localCommand([
