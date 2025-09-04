@@ -46,7 +46,7 @@ return [
         }),
 
         // Deploy chosen branch to a selected SSH connection
-        'branch' => InlineCommand::make('Deploy chosen branch to a selected SSH Connection', function (InlineCommand $command) {
+        'branch' => InlineCommand::make('Deploy chosen branch to a selected SSH connection', function (InlineCommand $command) {
             // Select which SSH connection to deploy to
             $sshConnection = $command->select('Select a SSH connection to deploy to', array_values($command->getBranchToSshMappings()));
 
@@ -76,6 +76,18 @@ return [
                     'npm run build',
                     'exit',
                 ]); 
+        }),
+
+        // Composer update
+        'composer_update' => InlineCommand::make('Run `composer update --no-dev` on the selected SSH connection', function (InlineCommand $command) {
+            // Select which SSH connection to deploy to
+            $sshConnection = $command->select('Select a SSH connection to execute composer update', array_values($command->getBranchToSshMappings()));
+
+            // Execute commands
+            $command->sshCommand($sshConnection, [
+                'composer update --no-dev --optimize-autoloader',
+                'exit'
+            ]);
         }),
 
         // Check local versions
