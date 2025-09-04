@@ -70,7 +70,6 @@ return [
                 ->sshCommand($sshConnection, [
                     'git fetch --prune origin',
                     "git fetch origin {$branch}:refs/remotes/origin/{$branch}",
-                    'git branch -r',
                     "git reset --hard origin/{$branch}",
                     'composer install --no-dev --optimize-autoloader',
                     'npm install',
